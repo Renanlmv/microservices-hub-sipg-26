@@ -1,0 +1,28 @@
+name: CI - ms-pagamento (crud)
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "ms-pagamento/**"
+      - ".github/workflows/**"
+  push:
+    branches: ["main"]
+    paths:
+      - "ms-pagamento/**"
+      - ".github/workflows/**"
+
+jobs:
+  build-ms-pagamento:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Build ms-pagamento      
+        run: mvn -f ms-pagamento/pom.xml -B test
