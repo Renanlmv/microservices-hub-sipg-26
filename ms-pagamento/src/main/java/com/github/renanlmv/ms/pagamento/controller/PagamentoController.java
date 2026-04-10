@@ -1,0 +1,58 @@
+package com.github.renanlmv.ms.pagamento.controller;
+
+import com.github.renanlmv.ms.pagamento.dto.PagamentoDTO;
+import com.github.renanlmv.ms.pagamento.service.PagamentoService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+import java.util.List;
+
+@RestController
+@RequestMapping("/pagamentos")
+public class PagamentoController {
+
+    @Autowired
+    private PagamentoService pagamentoService;
+
+    @GetMapping
+    public ResponseEntity<List<PagamentoDTO>> getAllPagamentos() {
+
+        List<PagamentoDTO> list = pagamentoService.findAllPagamentos();
+
+        return ResponseEntity.ok(list);
+    }
+
+    @PostMapping
+    public ResponseEntity<PagamentoDTO> createPagamento(@RequestBody @Valid PagamentoDTO pagamentoDTO) {
+
+        pagamentoDTO = pagamentoService.savePagamento(pagamentoDTO);
+
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequestUri()
+                .path("/{id}")
+                .buildAndExpand(pagamentoDTO.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(pagamentoDTO);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PagamentoDTO> updateProduto(@PathVariable Long id, @RequestBody @Valid PagamentoDTO pagamentoDTO) {
+
+        pagamentoDTO = pagamentoService.updatePagamento(id, pagamentoDTO);
+
+        return ResponseEntity.ok(pagamentoDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePagamento(@PathVariable Long id) {
+
+        pagamentoService.deletePagamentoById(id);
+
+        return ResponseEntity.noContent().build();
+    }
+}
