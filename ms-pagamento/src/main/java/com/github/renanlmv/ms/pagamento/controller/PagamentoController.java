@@ -26,6 +26,13 @@ public class PagamentoController {
         return ResponseEntity.ok(list);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<PagamentoDTO> getPagamentoById(@PathVariable Long id) {
+
+        PagamentoDTO pagamentoDTO = pagamentoService.findPagamentoById(id);
+        return ResponseEntity.ok(pagamentoDTO);
+    }
+
     @PostMapping
     public ResponseEntity<PagamentoDTO> createPagamento(@RequestBody @Valid PagamentoDTO pagamentoDTO) {
 
