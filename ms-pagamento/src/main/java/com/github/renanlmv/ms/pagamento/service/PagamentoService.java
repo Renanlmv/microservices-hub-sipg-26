@@ -23,6 +23,16 @@ public class PagamentoService {
         return pagamentoRepository.findAll().stream().map(PagamentoDTO::new).toList();
     }
 
+    @Transactional(readOnly = true)
+    public PagamentoDTO findPagamentoById(Long id) {
+
+        Pagamento pagamento = pagamentoRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Recurso não encontrado. ID: " + id)
+        );
+
+        return new PagamentoDTO(pagamento);
+    }
+
     @Transactional
     public PagamentoDTO savePagamento(PagamentoDTO pagamentoDTO) {
 
