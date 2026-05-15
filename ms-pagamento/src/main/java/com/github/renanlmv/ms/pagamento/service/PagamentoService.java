@@ -1,10 +1,13 @@
 package com.github.renanlmv.ms.pagamento.service;
 
+import com.github.renanlmv.ms.pagamento.client.PedidoClient;
 import com.github.renanlmv.ms.pagamento.dto.PagamentoDTO;
 import com.github.renanlmv.ms.pagamento.entities.Pagamento;
 import com.github.renanlmv.ms.pagamento.entities.Status;
+import com.github.renanlmv.ms.pagamento.exceptions.PagamentoAprovadoException;
 import com.github.renanlmv.ms.pagamento.exceptions.ResourceNotFoundException;
 import com.github.renanlmv.ms.pagamento.repositories.PagamentoRepository;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +19,9 @@ public class PagamentoService {
 
     @Autowired
     private PagamentoRepository pagamentoRepository;
+
+    @Autowired
+    private PedidoClient pedidoClient;
 
     @Transactional(readOnly = true)
     public List<PagamentoDTO> findAllPagamentos() {
@@ -43,6 +49,29 @@ public class PagamentoService {
         return new PagamentoDTO(pagamento);
     }
 
+    @Transactional
+    public PagamentoDTO confirmarPagamentoDoPedido(Long id) {
+
+        Pagamento pagamento = pagamentoRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Pagamento não encontrado. ID: " + id)
+        );
+
+        pagamento.setStatus(Status.APROVADO);
+        pagamentoRepository.save(pagamento);
+
+        try {
+            pedidoClient.confirmarPagamento(pagamento.getPedidoId());
+        } catch (FeignException.NotFound e) { // 404 do ms-pedido
+            // não existe pedido para receber a confirmação
+            throw new ResourceNotFoundException("Pedido não encontrado. ID: " + pagamento.getPedidoId());
+        } catch (FeignException e) {
+            // outros erros (400/500/timeout etc.)
+            throw new RuntimeException("Falha ao comunicar com ms-pedido.", e);
+        }
+
+        return new PagamentoDTO(pagamento);
+    }
+
     private void mapDtoToPagamento(PagamentoDTO pagamentoDTO, Pagamento pagamento) {
 
         pagamento.setNome(pagamentoDTO.getNome());
@@ -58,6 +87,13 @@ public class PagamentoService {
 
         try {
             Pagamento pagamento = pagamentoRepository.getReferenceById(id);
+
+            if(pagamento.getStatus().equals(Status.APROVADO)) {
+                throw new PagamentoAprovadoException(
+                        String.format("Pagamento ID %d já está APROVADO e não pode ser alterado.", id)
+                );
+            }
+
             mapDtoToPagamento(pagamentoDTO, pagamento);
             pagamento.setStatus(pagamentoDTO.getStatus());
             pagamento = pagamentoRepository.save(pagamento);

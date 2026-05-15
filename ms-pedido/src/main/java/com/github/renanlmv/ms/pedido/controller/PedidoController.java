@@ -4,6 +4,7 @@ import com.github.renanlmv.ms.pedido.dto.PedidoDTO;
 import com.github.renanlmv.ms.pedido.service.PedidoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -17,6 +18,12 @@ public class PedidoController {
 
     @Autowired
     private PedidoService pedidoService;
+
+    // Testando load balancing: devolve a porta da instância
+    @GetMapping("/port")
+    public String port(@Value("${local.server.port}") String porta) {
+        return "Instância respondeu na porta " + porta;
+    }
 
     @GetMapping
     public ResponseEntity<List<PedidoDTO>> getAllPedidos() {
@@ -55,6 +62,12 @@ public class PedidoController {
         return ResponseEntity.ok(pedidoDTO);
     }
 
+    @PutMapping("/{pedidoId}/pagamento/confirmado")
+    public void confirmarPagamento(@PathVariable Long pedidoId) {
+
+        pedidoService.confirmarPagamento(pedidoId);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePedido(@PathVariable Long id) {
 
@@ -62,4 +75,6 @@ public class PedidoController {
 
         return ResponseEntity.noContent().build();
     }
+
+
 }

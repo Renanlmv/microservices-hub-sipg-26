@@ -1,6 +1,7 @@
 package com.github.renanlmv.ms.pagamento.exceptions.handler;
 
 import com.github.renanlmv.ms.pagamento.exceptions.DatabaseException;
+import com.github.renanlmv.ms.pagamento.exceptions.PagamentoAprovadoException;
 import com.github.renanlmv.ms.pagamento.exceptions.ResourceNotFoundException;
 import com.github.renanlmv.ms.pagamento.exceptions.dto.CustomErrorDTO;
 import com.github.renanlmv.ms.pagamento.exceptions.dto.ValidationErrorDTO;
@@ -23,6 +24,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<CustomErrorDTO> handleResourceNotFound(ResourceNotFoundException e,
                                                                  HttpServletRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND; //404
+        CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(),
+                e.getMessage(), request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(PagamentoAprovadoException.class)
+    public ResponseEntity<CustomErrorDTO> handlerPagamentoAprovado(PagamentoAprovadoException e,
+                                                                   HttpServletRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
         CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(),
                 e.getMessage(), request.getRequestURI());
 
@@ -57,7 +68,7 @@ public class GlobalExceptionHandler {
     // 400 - tipo inválido em PathVariable/RequestParam (ex.: /produtos/abc quando espera Long)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<CustomErrorDTO> handleTypeMismatch(MethodArgumentNotValidException e,
-                                                             HttpServletRequest request){
+                                                             HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST; //400
         CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(),
                 "Requisição inválida (parâmetro com tipo/formato incorreto).",
@@ -67,7 +78,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DatabaseException.class)
     public ResponseEntity<CustomErrorDTO> handleDatabase(DatabaseException e,
-                                                         HttpServletRequest request){
+                                                         HttpServletRequest request) {
 
         HttpStatus status = HttpStatus.CONFLICT; //409
         CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(),

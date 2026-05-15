@@ -1,6 +1,7 @@
 package com.github.renanlmv.ms.pedido.exceptions.handler;
 
 import com.github.renanlmv.ms.pedido.exceptions.DatabaseException;
+import com.github.renanlmv.ms.pedido.exceptions.PedidoPagoException;
 import com.github.renanlmv.ms.pedido.exceptions.ResourceNotFoundException;
 import com.github.renanlmv.ms.pedido.exceptions.dto.CustomErrorDTO;
 import com.github.renanlmv.ms.pedido.exceptions.dto.ValidationErrorDTO;
@@ -23,6 +24,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<CustomErrorDTO> handleResourceNotFound(ResourceNotFoundException e,
                                                                  HttpServletRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND; //404
+        CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(),
+                e.getMessage(), request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(PedidoPagoException.class)
+    public ResponseEntity<CustomErrorDTO> handlePedidoPago (PedidoPagoException e,
+                                                            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
         CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(),
                 e.getMessage(), request.getRequestURI());
 
@@ -77,16 +88,16 @@ public class GlobalExceptionHandler {
     }
 
     // 500 - fallback para qualquer erro não tratado
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<CustomErrorDTO> handleGenericException(Exception e,
-                                                                 HttpServletRequest request) {
-        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR; // 500
-        CustomErrorDTO err = new CustomErrorDTO(
-                Instant.now(), status.value(),
-                "Erro interno inesperado.",
-                request.getRequestURI()
-        );
-
-        return ResponseEntity.status(status).body(err);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<CustomErrorDTO> handleGenericException(Exception e,
+//                                                                 HttpServletRequest request) {
+//        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR; // 500
+//        CustomErrorDTO err = new CustomErrorDTO(
+//                Instant.now(), status.value(),
+//                "Erro interno inesperado.",
+//                request.getRequestURI()
+//        );
+//
+//        return ResponseEntity.status(status).body(err);
+//    }
 }

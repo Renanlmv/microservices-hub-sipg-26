@@ -5,6 +5,7 @@ import com.github.renanlmv.ms.pedido.dto.PedidoDTO;
 import com.github.renanlmv.ms.pedido.entities.ItemDoPedido;
 import com.github.renanlmv.ms.pedido.entities.Pedido;
 import com.github.renanlmv.ms.pedido.entities.Status;
+import com.github.renanlmv.ms.pedido.exceptions.PedidoPagoException;
 import com.github.renanlmv.ms.pedido.exceptions.ResourceNotFoundException;
 import com.github.renanlmv.ms.pedido.repositories.ItemDoPedidoRepository;
 import com.github.renanlmv.ms.pedido.repositories.PedidoRepository;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PedidoService {
@@ -74,9 +76,16 @@ public class PedidoService {
 
         try {
             Pedido pedido = pedidoRepository.getReferenceById(id);
+
+            if (pedido.getStatus().equals(Status.PAGO)) {
+                throw new PedidoPagoException(
+                        String.format("Pedido ID %d já está PAGO e não pode ser alterado.", id)
+                );
+            }
+
             pedido.getItens().clear();
             pedido.setData(LocalDate.now());
-            pedido.setStatus(Status.CRIADO);
+//            pedido.setStatus(Status.CRIADO);
             mapDtoToPedido(pedidoDTO, pedido);
             pedido.calcularValorTotalDoPedido();
             pedido = pedidoRepository.save(pedido);
@@ -94,5 +103,18 @@ public class PedidoService {
         }
 
         pedidoRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void confirmarPagamento(Long id) {
+
+        Optional<Pedido> pedido = pedidoRepository.findById(id);
+
+        if(pedido.isEmpty()) {
+            throw new ResourceNotFoundException("Pedido não encontrado. ID: " + id);
+        }
+
+        pedido.get().setStatus(Status.PAGO);
+        pedidoRepository.save(pedido.get());
     }
 }
