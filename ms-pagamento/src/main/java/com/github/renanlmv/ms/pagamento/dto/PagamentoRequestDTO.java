@@ -15,9 +15,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class PagamentoDTO {
-
-    private Long id;
+public class PagamentoRequestDTO {
 
     @NotNull(message = "Campo valor é requerido")
     @Positive(message = "O valor do pagamento deve ser um número positivo")
@@ -39,20 +37,16 @@ public class PagamentoDTO {
     @Size(min = 3, max = 3, message = "O código de segurança deve ter 3 caracteres")
     private String codigoSeguranca; // XXX
 
-    private Status status;
-
     @NotNull(message = "Campo ID do pedido é requerido")
     private Long pedidoId;
 
 
-    public PagamentoDTO(Pagamento pagamento) {
-        id = pagamento.getId();
+    public PagamentoRequestDTO(Pagamento pagamento) {
         valor = pagamento.getValor();
         nome = pagamento.getNome();
         numeroCartao = pagamento.getNumeroCartao();
         validade = pagamento.getValidade();
         codigoSeguranca = pagamento.getCodigoSeguranca();
-        status = pagamento.getStatus();
         pedidoId = pagamento.getPedidoId();
     }
 }
