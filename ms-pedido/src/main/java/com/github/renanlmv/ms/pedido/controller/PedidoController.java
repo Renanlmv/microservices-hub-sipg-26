@@ -1,6 +1,7 @@
 package com.github.renanlmv.ms.pedido.controller;
 
-import com.github.renanlmv.ms.pedido.dto.PedidoDTO;
+import com.github.renanlmv.ms.pedido.dto.PedidoRequestDTO;
+import com.github.renanlmv.ms.pedido.dto.PedidoResponseDTO;
 import com.github.renanlmv.ms.pedido.service.PedidoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,40 +27,40 @@ public class PedidoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PedidoDTO>> getAllPedidos() {
+    public ResponseEntity<List<PedidoResponseDTO>> getAllPedidos() {
 
-        List<PedidoDTO> list = pedidoService.findAllPedidos();
+        List<PedidoResponseDTO> list = pedidoService.findAllPedidos();
 
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PedidoDTO> getPedidoById(@PathVariable Long id) {
+    public ResponseEntity<PedidoResponseDTO> getPedidoById(@PathVariable Long id) {
 
-        PedidoDTO pedidoDTO = pedidoService.findPedidoById(id);
+        PedidoResponseDTO responseDTO = pedidoService.findPedidoById(id);
 
-        return ResponseEntity.ok(pedidoDTO);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @PostMapping
-    public ResponseEntity<PedidoDTO> createPedido(@RequestBody @Valid PedidoDTO pedidoDTO) {
+    public ResponseEntity<PedidoResponseDTO> createPedido(@RequestBody @Valid PedidoRequestDTO requestDTO) {
 
-        pedidoDTO = pedidoService.savePedido(pedidoDTO);
+         PedidoResponseDTO responseDTO = pedidoService.savePedido(requestDTO);
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
                 .path("/{id}")
-                .buildAndExpand(pedidoDTO.getId())
+                .buildAndExpand(responseDTO.getId())
                 .toUri();
-        return ResponseEntity.created(uri).body(pedidoDTO);
+        return ResponseEntity.created(uri).body(responseDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PedidoDTO> updatePedido(@PathVariable Long id, @RequestBody @Valid PedidoDTO pedidoDTO) {
+    public ResponseEntity<PedidoResponseDTO> updatePedido(@PathVariable Long id, @RequestBody @Valid PedidoRequestDTO requestDTO) {
 
-        pedidoDTO = pedidoService.updatePedido(id, pedidoDTO);
+        PedidoResponseDTO responseDTO = pedidoService.updatePedido(id, requestDTO);
 
-        return ResponseEntity.ok(pedidoDTO);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @PutMapping("/{pedidoId}/pagamento/confirmado")

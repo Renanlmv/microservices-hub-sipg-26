@@ -2,6 +2,9 @@ package com.github.renanlmv.ms.pedido.dto;
 
 import com.github.renanlmv.ms.pedido.entities.ItemDoPedido;
 import com.github.renanlmv.ms.pedido.entities.Pedido;
+import com.github.renanlmv.ms.pedido.entities.Status;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -18,32 +21,33 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class PedidoRequestDTO {
+public class PedidoResponseDTO {
 
-    @NotBlank(message = "Nome requerido")
-    @Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres")
+    private Long id;
+
     private String nome;
 
-    @NotBlank(message = "CPF requerido")
-    @Size(min = 11, max = 11, message = "CPF deve ter 11 caracteres")
     private String cpf;
 
     private LocalDate data;
 
+    private Status status;
+
     private BigDecimal valorTotal;
 
-    @NotEmpty(message = "Pedido deve ter pelo menos um item")
     private List<@Valid ItemDoPedidoDTO> itens = new ArrayList<>();
 
-//    public PedidoRequestDTO(Pedido pedido) {
-//        nome = pedido.getNome();
-//        cpf = pedido.getCpf();
-//        data = pedido.getData();
-//        valorTotal = pedido.getValorTotal();
-//
-//        for (ItemDoPedido item : pedido.getItens()) {
-//            ItemDoPedidoDTO itemDTO = new ItemDoPedidoDTO(item);
-//            itens.add(itemDTO);
-//        }
-//    }
+    public PedidoResponseDTO(Pedido pedido) {
+        id = pedido.getId();
+        nome = pedido.getNome();
+        cpf = pedido.getCpf();
+        data = pedido.getData();
+        status = pedido.getStatus();
+        valorTotal = pedido.getValorTotal();
+
+        for (ItemDoPedido item : pedido.getItens()) {
+            ItemDoPedidoDTO itemDTO = new ItemDoPedidoDTO(item);
+            itens.add(itemDTO);
+        }
+    }
 }
