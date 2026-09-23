@@ -1,7 +1,7 @@
 package com.github.renanlmv.ms.pagamento.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.renanlmv.ms.pagamento.dto.PagamentoDTO;
+import com.github.renanlmv.ms.pagamento.dto.PagamentoRequestDTO;
 import com.github.renanlmv.ms.pagamento.entities.Pagamento;
 import com.github.renanlmv.ms.pagamento.tests.Factory;
 import org.junit.jupiter.api.BeforeEach;
@@ -80,7 +80,7 @@ public class PagamentoControllerIT {
     @Test
     void createPagamentoShouldReturn201WhenValid() throws Exception {
 
-        PagamentoDTO requestDTO = new PagamentoDTO(Factory.createPagamentoSemId());
+        PagamentoRequestDTO requestDTO = new PagamentoRequestDTO(Factory.createPagamentoSemId());
         String jsonRequestBody = objectMapper.writeValueAsString(requestDTO);
 
         mockMvc.perform(post("/pagamentos")
@@ -100,7 +100,7 @@ public class PagamentoControllerIT {
         Pagamento pagamentoInvalido = Factory.createPagamentoSemId();
         pagamentoInvalido.setValor(BigDecimal.valueOf(0));
         pagamentoInvalido.setNome(null);
-        PagamentoDTO requestDTO = new PagamentoDTO(pagamentoInvalido);
+        PagamentoRequestDTO requestDTO = new PagamentoRequestDTO(pagamentoInvalido);
         String jsonRequestBody = objectMapper.writeValueAsString(requestDTO);
 
         mockMvc.perform(post("/pagamentos")
@@ -118,7 +118,7 @@ public class PagamentoControllerIT {
 
         pagamento = Factory.createPagamento();
         pagamento.setValor(BigDecimal.valueOf(800.0));
-        PagamentoDTO requestDTO = new PagamentoDTO(pagamento);
+        PagamentoRequestDTO requestDTO = new PagamentoRequestDTO(pagamento);
         String jsonRequestBody = objectMapper.writeValueAsString(requestDTO);
 
         mockMvc.perform(put("/pagamentos/{id}", existingId)
@@ -139,7 +139,7 @@ public class PagamentoControllerIT {
         pagamento.setNome(null);
         pagamento.setValor(BigDecimal.valueOf(-32.05));
         pagamento.setPedidoId(null);
-        PagamentoDTO requestDTO = new PagamentoDTO(pagamento);
+        PagamentoRequestDTO requestDTO = new PagamentoRequestDTO(pagamento);
         String jsonRequestBody = objectMapper.writeValueAsString(requestDTO);
 
         mockMvc.perform(put("/pagamentos/{id}", existingId)
@@ -156,7 +156,7 @@ public class PagamentoControllerIT {
     void updatePagamentoShouldReturn404WhenIdDoesNotExist() throws Exception {
 
         pagamento = Factory.createPagamento();
-        PagamentoDTO requestDTO = new PagamentoDTO(pagamento);
+        PagamentoRequestDTO requestDTO = new PagamentoRequestDTO(pagamento);
         String jsonRequestBody = objectMapper.writeValueAsString(requestDTO);
 
         mockMvc.perform(put("/pagamentos/{id}", nonExistingId)

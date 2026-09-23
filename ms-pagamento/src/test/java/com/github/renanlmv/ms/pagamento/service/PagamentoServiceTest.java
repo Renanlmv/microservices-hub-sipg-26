@@ -1,6 +1,6 @@
 package com.github.renanlmv.ms.pagamento.service;
 
-import com.github.renanlmv.ms.pagamento.dto.PagamentoDTO;
+import com.github.renanlmv.ms.pagamento.dto.PagamentoRequestDTO;
 import com.github.renanlmv.ms.pagamento.entities.Pagamento;
 import com.github.renanlmv.ms.pagamento.exceptions.ResourceNotFoundException;
 import com.github.renanlmv.ms.pagamento.repositories.PagamentoRepository;
@@ -84,7 +84,7 @@ public class PagamentoServiceTest {
         Mockito.when(pagamentoRepository.findById(existingId))
                 .thenReturn(Optional.of(pagamento));
 
-        PagamentoDTO restul = pagamentoService.findPagamentoById(existingId);
+        PagamentoRequestDTO restul = pagamentoService.findPagamentoById(existingId);
 
         Assertions.assertNotNull(pagamento);
         Assertions.assertEquals(pagamento.getId(), restul.getId());
@@ -114,9 +114,9 @@ public class PagamentoServiceTest {
         Mockito.when(pagamentoRepository.save(any(Pagamento.class)))
                 .thenReturn(pagamento);
         pagamento.setId(null);
-        PagamentoDTO inputDTO = new PagamentoDTO(pagamento);
+        PagamentoRequestDTO inputDTO = new PagamentoRequestDTO(pagamento);
 
-        PagamentoDTO result = pagamentoService.savePagamento(inputDTO);
+        PagamentoRequestDTO result = pagamentoService.savePagamento(inputDTO);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(pagamento.getId(), result.getId());
@@ -132,7 +132,7 @@ public class PagamentoServiceTest {
         Mockito.when(pagamentoRepository.getReferenceById(existingId)).thenReturn(pagamento);
         Mockito.when(pagamentoRepository.save(any(Pagamento.class))).thenReturn(pagamento);
 
-        PagamentoDTO result = pagamentoService.updatePagamento(id, new PagamentoDTO(pagamento));
+        PagamentoRequestDTO result = pagamentoService.updatePagamento(id, new PagamentoRequestDTO(pagamento));
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(pagamento.getId(), result.getId());
@@ -152,7 +152,7 @@ public class PagamentoServiceTest {
         Mockito.when(pagamentoRepository.getReferenceById(nonExistingId))
                 .thenThrow(EntityNotFoundException.class);
 
-        PagamentoDTO inputDTO = new PagamentoDTO(pagamento);
+        PagamentoRequestDTO inputDTO = new PagamentoRequestDTO(pagamento);
 
         Assertions.assertThrows(ResourceNotFoundException.class,
                 () -> pagamentoService.updatePagamento(nonExistingId, inputDTO)

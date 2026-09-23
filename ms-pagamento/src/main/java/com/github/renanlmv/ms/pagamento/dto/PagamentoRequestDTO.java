@@ -40,13 +40,12 @@ public class PagamentoRequestDTO {
     @NotNull(message = "Campo ID do pedido é requerido")
     private Long pedidoId;
 
-
-    public PagamentoRequestDTO(Pagamento pagamento) {
-        valor = pagamento.getValor();
-        nome = pagamento.getNome();
-        numeroCartao = pagamento.getNumeroCartao();
-        validade = pagamento.getValidade();
-        codigoSeguranca = pagamento.getCodigoSeguranca();
-        pedidoId = pagamento.getPedidoId();
-    }
+//    public PagamentoRequestDTO(Pagamento pagamento) {
+//        valor = pagamento.getValor();
+//        nome = pagamento.getNome();
+//        numeroCartao = pagamento.getNumeroCartao();
+//        validade = pagamento.getValidade();
+//        codigoSeguranca = pagamento.getCodigoSeguranca();
+//        pedidoId = pagamento.getPedidoId();
+//    }
 }
