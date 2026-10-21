@@ -1,0 +1,19 @@
+services:
+  mysqldb:
+    # nome do container
+    container_name: mysql_846
+
+    # imagem utilizada
+    image: mysql:8.4.6
+
+    # variáveis de ambiente do MySQL
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+
+    # mapeamento de portas
+    ports:
+      - "3306:3306"
+
+    #persistência de dados
+    volumes:
+      - ./.data/mysql-data8:/var/lib/mysql

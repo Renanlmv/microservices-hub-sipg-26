@@ -1,0 +1,48 @@
+services:
+  eureka-server:
+    container_name: eureka-server
+    image: eureka-server:latest
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-net
+  
+  api-gateway:
+    container_name: api-gateway
+    image: api-gateway:latest
+    ports:
+      - "8082:8082"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULZONE=http://eureka-server:8761/eureka/
+    networks:
+      - microservices-net
+    depends_on:
+      - eureka-server
+
+  ms-pagamento:
+    container_name: ms-pagamento
+    image: ms-pagamento:latest
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULZONE=http://eureka-server:8761/eureka/
+      - SERVER_PORT=8080
+    networks:
+      - microservices-net
+    depends_on:
+      - eureka-server
+      - api-gateway
+
+  ms-pedido:
+    container_name: ms-pedido
+    image: ms-pedido:latest
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULZONE=http://eureka-server:8761/eureka/
+      - SERVER_PORT=8080
+    networks:
+      - microservices-net
+    depends_on:
+      - eureka-server
+      - api-gateway
+
+networks:
+  microservices-net:
+    external: true
